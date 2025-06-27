@@ -28,7 +28,7 @@ jail("<INPUT_HERE>")
     setOutput('');
     
     try {
-      const response = await fetch('http://localhost:8000/exec_code', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/exec_code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
