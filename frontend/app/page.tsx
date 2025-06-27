@@ -1,103 +1,138 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState } from 'react';
+
+const PythonCodeDisplay = () => {  
+  const [userInput, setUserInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [isExecuting, setIsExecuting] = useState(false);
+
+  const sampleCode = `from get_flag import get_flag
+from execute_code import execute_code
+
+you_cant_type = ["import", "print", "exec", "eval", "open", "os", "sys"]
+# you_cant_type = []
+
+flag = get_flag()
+
+def jail(input_string):
+    for keyword in you_cant_type:
+        if keyword in input_string:
+            print("偵測到禁用字詞!")
+        else:
+            eval(input_string)
+
+# 你只能在框框內輸入!
+jail(<INPUT_HERE>)
+`;
+
+  const executeCode = async () => {
+    setIsExecuting(true);
+    setOutput('');
+    
+    try {
+      const response = await fetch('http://localhost:8000/exec_code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: userInput }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        setOutput(`Error: ${data.error}`);
+      } else if (data.result) {
+        const result = data.result;
+        if (result.success) {
+          setOutput(result.stdout || '執行成功，無輸出');
+        } else {
+          setOutput(`錯誤: ${result.stderr}`);
+        }
+      } else {
+        setOutput('未知錯誤');
+      }
+    } catch (error) {
+      setOutput(`網路錯誤: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="max-w-4xl mx-auto p-6">
+      <h2 className="text-2xl font-bold mb-4 text-zinc-800">Python Code Display</h2>
+      
+      <div className="relative bg-zinc-900 rounded-lg overflow-hidden shadow-lg">
+        {/* Header */}
+        <div className="flex items-center justify-between bg-zinc-800 px-4 py-2">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+          </div>
+          <span className="text-zinc-400 text-sm">jail.py</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        
+        {/* Code content with line numbers */}
+        <div className="flex overflow-x-auto">
+          {/* Line numbers */}
+          <div className="bg-zinc-800 px-4 py-4 select-none">
+            <pre className="text-sm text-zinc-500 font-mono leading-relaxed">
+              {sampleCode.split('\n').map((_, index) => (
+                <div key={index} className="text-right">
+                  {index + 1}
+                </div>
+              ))}
+            </pre>
+          </div>
+          
+          {/* Code */}
+          <div className="flex-1 p-4 relative">
+            <pre className="text-sm">
+              <code className="text-zinc-100 font-mono leading-relaxed">
+                {sampleCode.split('<INPUT_HERE>')[0]}
+                <input
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  className="bg-transparent text-zinc-100 border-none outline-none font-mono text-sm px-1 py-0 min-w-[100px] w-auto"
+                  style={{ width: `${Math.max(userInput.length * 8 + 20, 100)}px` }}
+                  placeholder="your_code_here"
+                  onKeyPress={(e) => e.key === 'Enter' && !isExecuting && executeCode()}
+                />
+                {sampleCode.split('<INPUT_HERE>')[1]}
+              </code>
+            </pre>
+          </div>
+        </div>
+      </div>
+
+      {/* Execute Button */}
+      <div className="mt-6">
+        <button
+          onClick={executeCode}
+          disabled={isExecuting}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {isExecuting ? '執行中...' : '執行代碼'}
+        </button>
+      </div>
+
+      {/* Output Section */}
+      {output && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2 text-zinc-800">輸出結果:</h3>
+          <div className="bg-zinc-100 border border-zinc-300 rounded-md p-4">
+            <pre className="text-sm text-zinc-800 font-mono whitespace-pre-wrap">
+              {output}
+            </pre>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default PythonCodeDisplay;
