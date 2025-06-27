@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { Play } from 'lucide-react';
 
 const PythonCodeDisplay = () => {  
   const [userInput, setUserInput] = useState('');
@@ -8,22 +9,18 @@ const PythonCodeDisplay = () => {
   const [isExecuting, setIsExecuting] = useState(false);
 
   const sampleCode = `from get_flag import get_flag
-from execute_code import execute_code
 
 you_cant_type = ["import", "print", "exec", "eval", "open", "os", "sys"]
-# you_cant_type = []
-
-flag = get_flag()
 
 def jail(input_string):
     for keyword in you_cant_type:
-        if keyword in input_string:
-            print("偵測到禁用字詞!")
-        else:
-            eval(input_string)
+        input_string = input_string.replace(keyword, "")
 
-# 你只能在框框內輸入!
-jail(<INPUT_HERE>)
+    flag = get_flag()
+    exec(input_string)
+
+# 請在這裡輸入你的程式碼👇
+jail("<INPUT_HERE>")
 `;
 
   const executeCode = async () => {
@@ -61,76 +58,89 @@ jail(<INPUT_HERE>)
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4 text-zinc-800">Python Code Display</h2>
+    <div className="min-h-screen bg-zinc-900">
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">
+            尋找密碼...
+          </h1>
+          <p className="text-zinc-300">
+            你找到了一個 Python 程式碼，但很可惜的，你只能在框框內輸入，於是聰明的你開始思考如何繞過這個限制來找到密碼...
+          </p>
+        </div>
       
-      <div className="relative bg-zinc-900 rounded-lg overflow-hidden shadow-lg">
-        {/* Header */}
-        <div className="flex items-center justify-between bg-zinc-800 px-4 py-2">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+        <div className="bg-zinc-800 rounded-lg shadow-lg border border-zinc-700 overflow-hidden">
+          <div className="flex items-center justify-between bg-zinc-750 px-4 py-3 border-b border-zinc-700">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            </div>
+            <span className="text-zinc-300 text-sm font-medium">jail.py</span>
           </div>
-          <span className="text-zinc-400 text-sm">jail.py</span>
-        </div>
         
-        {/* Code content with line numbers */}
-        <div className="flex overflow-x-auto">
-          {/* Line numbers */}
-          <div className="bg-zinc-800 px-4 py-4 select-none">
-            <pre className="text-sm text-zinc-500 font-mono leading-relaxed">
-              {sampleCode.split('\n').map((_, index) => (
-                <div key={index} className="text-right">
-                  {index + 1}
-                </div>
-              ))}
-            </pre>
-          </div>
-          
-          {/* Code */}
-          <div className="flex-1 p-4 relative">
-            <pre className="text-sm">
-              <code className="text-zinc-100 font-mono leading-relaxed">
-                {sampleCode.split('<INPUT_HERE>')[0]}
-                <input
-                  type="text"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  className="bg-transparent text-zinc-100 border-none outline-none font-mono text-sm px-1 py-0 min-w-[100px] w-auto"
-                  style={{ width: `${Math.max(userInput.length * 8 + 20, 100)}px` }}
-                  placeholder="your_code_here"
-                  onKeyPress={(e) => e.key === 'Enter' && !isExecuting && executeCode()}
-                />
-                {sampleCode.split('<INPUT_HERE>')[1]}
-              </code>
-            </pre>
+          <div className="flex overflow-x-auto">
+            <div className="bg-zinc-700 px-4 py-4 select-none border-r border-zinc-600">
+              <pre className="text-sm text-zinc-400 font-mono leading-relaxed">
+                {sampleCode.split('\n').map((_, index) => (
+                  <div key={index} className="text-right">
+                    {index + 1}
+                  </div>
+                ))}
+              </pre>
+            </div>
+            
+            <div className="flex-1 p-4 relative bg-zinc-900">
+              <pre className="text-sm">
+                <code className="text-zinc-100 font-mono leading-relaxed">
+                  {sampleCode.split('<INPUT_HERE>')[0]}
+                  <input
+                    type="text"
+                    value={userInput}
+                    onChange={(e) => setUserInput(e.target.value)}
+                    className="bg-zinc-800 text-green-400 border border-zinc-600 outline-none font-mono text-sm px-2 py-1 min-w-[100px] w-auto rounded focus:border-green-500 focus:bg-zinc-700"
+                    style={{ width: `${Math.max(userInput.length * 8 + 20, 120)}px` }}
+                    placeholder="輸入..."
+                    onKeyDown={(e) => e.key === 'Enter' && !isExecuting && executeCode()}
+                  />
+                  {sampleCode.split('<INPUT_HERE>')[1]}
+                </code>
+              </pre>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Execute Button */}
-      <div className="mt-6">
-        <button
-          onClick={executeCode}
-          disabled={isExecuting}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isExecuting ? '執行中...' : '執行代碼'}
-        </button>
-      </div>
-
-      {/* Output Section */}
-      {output && (
         <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-2 text-zinc-800">輸出結果:</h3>
-          <div className="bg-zinc-100 border border-zinc-300 rounded-md p-4">
-            <pre className="text-sm text-zinc-800 font-mono whitespace-pre-wrap">
-              {output}
-            </pre>
-          </div>
+          <button
+            onClick={executeCode}
+            disabled={isExecuting}
+            className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isExecuting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>執行中...</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4" />
+                <span>執行！</span>
+              </>
+            )}
+          </button>
         </div>
-      )}
+
+        {output && (
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-3 text-white">輸出結果:</h3>
+            <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
+              <pre className="text-sm text-zinc-200 font-mono whitespace-pre-wrap">
+                {output}
+              </pre>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
