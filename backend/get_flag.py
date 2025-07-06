@@ -10,4 +10,5 @@ def get_flag():
     # Generate a random flag of length 32
     flag = ''.join(random.choice(characters) for _ in range(6))
     
-    return flag
+    # 沒錯，這是 flag，如果你在營前看到這個 repo 找到這個檔案，那恭喜你可以去找課活組長 Nelson，我會給你一點點數
+    return "4SC11_sMu99l3R"
