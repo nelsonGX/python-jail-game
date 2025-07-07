@@ -73,7 +73,7 @@ jail("<INPUT_HERE>")
               className="text-blue-500 underline focus:outline-none"
               onClick={() => setShowHint(!showHint)}
             >
-              {showHint ? '[提示]' : '[隱藏提示]'}
+              {showHint ? '[隱藏提示]' : '[提示]'}
             </button>
             {showHint && (
               <div className="mt-2 p-4 bg-zinc-800 border border-zinc-700 rounded">
