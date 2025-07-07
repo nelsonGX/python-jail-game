@@ -28,6 +28,7 @@ async def generate(data: GenerateData):
     """
     try:
         result = jail(data.code)
+        print(f"User executed code: {data.code}, result: {result}")
         return {"result": result}
     except Exception as e:
         return {"error": str(e)}
