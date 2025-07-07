@@ -7,6 +7,7 @@ const PythonCodeDisplay = () => {
   const [userInput, setUserInput] = useState('');
   const [output, setOutput] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const sampleCode = `from get_flag import get_flag
 
@@ -67,6 +68,21 @@ jail("<INPUT_HERE>")
           <p className="text-zinc-300">
             你找到了一個 Python 程式碼，但很可惜的，你只能在框框內輸入，於是聰明的你開始思考如何繞過這個限制來找到密碼...
           </p>
+          <div className="relative">
+            <button 
+              className="text-blue-500 underline focus:outline-none"
+              onClick={() => setShowHint(!showHint)}
+            >
+              {showHint ? '[提示]' : '[隱藏提示]'}
+            </button>
+            {showHint && (
+              <div className="mt-2 p-4 bg-zinc-800 border border-zinc-700 rounded">
+                <p className="text-zinc-300">
+                  你需要找到 flag 的內容
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       
         <div className="bg-zinc-800 rounded-lg shadow-lg border border-zinc-700 overflow-hidden">
