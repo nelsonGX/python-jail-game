@@ -11,4 +11,4 @@ def get_flag():
     flag = ''.join(random.choice(characters) for _ in range(6))
     
     # 沒錯，這是 flag，如果你在營前看到這個 repo 找到這個檔案，那恭喜你可以去找課活組長 Nelson，我會給你一點點數
-    return "4SC11_sMu99l3R"
+    return "c0MmaND_1NJ3c710n"
