@@ -18,7 +18,7 @@ def jail(input_string):
         input_string = input_string.replace(keyword, "")
 
     flag = get_flag()
-    exec(input_string)
+    eval(input_string)
 
 # 請在這裡輸入你的程式碼👇
 jail("<INPUT_HERE>")
