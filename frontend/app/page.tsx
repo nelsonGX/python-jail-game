@@ -156,6 +156,7 @@ jail("<INPUT_HERE>")
             </div>
           </div>
         )}
+        來自nelson凌晨四點臨時加上去的提醒: 在sitcon camp prod的時候實際上是跑在docker裡的，但因為這次有人突然要我架起來所以這東西跑在一台vm的root上，拜託不要爆破他QQ...相信大家都是好駭客
       </div>
     </div>
   );
